@@ -27,8 +27,8 @@ class Jwts extends REST_Controller {
         if($this->M_main->get_user($q)->num_rows() == 0){$this->response($invalidLogin, REST_Controller::HTTP_OK);}
 		$match = $val->password;  
         if($p == $match){  
-        	$token['id'] = $val->id;
-            //$token['noHP'] = $u;
+        	//$token['id'] = $val->id;
+            $token['noHP'] = $u;
             $date = new DateTime();
             $token['iat'] = $date->getTimestamp();
             $token['exp'] = $date->getTimestamp() + 60*60*5; 
