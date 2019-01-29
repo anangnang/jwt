@@ -21,7 +21,7 @@ class Jwts extends REST_Controller {
         $p = sha1($this->post('password'));
         $q = array('noHP' => $u); 
         $invalidLogin['error'] = true;
-        $invalidLogin['status'] = 401;
+        $invalidLogin['status'] = 200;
         $invalidLogin['response'] = 'Invalid Login';
         $val = $this->M_main->get_user($q)->row(); 
         if($this->M_main->get_user($q)->num_rows() == 0){$this->response($invalidLogin, REST_Controller::HTTP_NOT_FOUND);}
@@ -42,7 +42,7 @@ class Jwts extends REST_Controller {
         }
         else {
             $output['error'] = true;
-            $output['status'] = 401;
+            $output['status'] = 200;
             $this->set_response($output, REST_Controller::HTTP_OK);
         }
     }
