@@ -24,7 +24,7 @@ class Jwts extends REST_Controller {
         $invalidLogin['status'] = 200;
         $invalidLogin['response'] = 'Invalid Login';
         $val = $this->M_main->get_user($q)->row(); 
-        if($this->M_main->get_user($q)->num_rows() == 0){$this->response($invalidLogin, REST_Controller::HTTP_NOT_FOUND);}
+        if($this->M_main->get_user($q)->num_rows() == 0){$this->response($invalidLogin, REST_Controller::HTTP_OK);}
 		$match = $val->password;  
         if($p == $match){  
         	$token['id'] = $val->id;
