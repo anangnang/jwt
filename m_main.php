@@ -103,7 +103,7 @@ class M_main extends CI_Model{
 LEFT JOIN perkara_pihak2 ON pihak.`id`=perkara_pihak2.`pihak_id`
 LEFT JOIN perkara_pihak1 ON pihak.`id`=perkara_pihak1.`pihak_id`
 JOIN perkara ON perkara.`perkara_id`=(IF(perkara_pihak2.`perkara_id` IS NULL, perkara_pihak1.`perkara_id`, perkara_pihak2.`perkara_id`))
-WHERE pihak.`nomor_indentitas`='123456'");
+WHERE pihak.`nomor_indentitas`=$nik");
 	    $query1=$query->result();
 	    $response['status']=200;
 	    $response['noperk']=$query;
