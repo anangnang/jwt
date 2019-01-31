@@ -84,7 +84,7 @@ class M_main extends CI_Model{
 	    return $query;
 	}
 	
-	public function cek_noperk1($nik) 
+	public function cek_noperk2($nik) 
   	{
 	    $this->db2->select('perkara.perkara_id, perkara.nomor_perkara');
 		$this->db2->from('perkara_pihak2');
@@ -96,6 +96,18 @@ class M_main extends CI_Model{
 	    $response['noperk']=$query;
 	    return $query;
 	}
+
+	public function cek_noperk1($nik) 
+  	{
+	    $query = $this->db2->query("select perkara.perkara_id, perkara.nomor_perkara FROM pihak
+LEFT JOIN perkara_pihak2 ON pihak.`id`=perkara_pihak2.`pihak_id`
+LEFT JOIN perkara_pihak1 ON pihak.`id`=perkara_pihak1.`pihak_id`
+JOIN perkara ON perkara.`perkara_id`=(IF(perkara_pihak2.`perkara_id` IS NULL, perkara_pihak1.`perkara_id`, perkara_pihak2.`perkara_id`))
+WHERE pihak.`nomor_indentitas`='123456'");
+	    $query1=$query->result();
+	    $response['status']=200;
+	    $response['noperk']=$query;
+	    return $query1;
 
 	public function logined($token, $id) 
   	{
