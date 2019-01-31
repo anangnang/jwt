@@ -128,6 +128,27 @@ class Jwts extends REST_Controller {
         }
     }
 
+	public function noperk_get($id){
+        $jwt = $this->input->get_request_header('Authorization');
+        try {
+            $decode = JWT::decode($jwt,$this->secretkey,array('HS256'));
+            if ($this->M_main->is_valid($decode-> noHP)>0) {
+                $nik = $this->M_main->detail_user_coba($id);
+                $noperk = $this->M_main->cek_noperk1($nik); 
+                $output['error'] = false;
+                $output['status'] = 200;
+                $output['nik'] = $nik;
+                $output['dataUmum'] = $noperk;
+                $this->set_response($output, REST_Controller::HTTP_OK);
+            }
+        } catch (Exception $e) {
+            $output['error'] = true;
+            $output['status'] = 200;
+            $output['response'] = 'Unauthorized';
+            $this->set_response($output, REST_Controller::HTTP_OK);
+            //exit();
+        }
+    }
 
     public function sidang_get($nik){
         $jwt = $this->input->get_request_header('Authorization');
