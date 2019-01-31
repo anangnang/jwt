@@ -83,6 +83,19 @@ class M_main extends CI_Model{
 	    $response['noperk']=$query;
 	    return $query;
 	}
+	
+	public function cek_noperk1($nik) 
+  	{
+	    $this->db2->select('perkara.perkara_id, perkara.nomor_perkara');
+		$this->db2->from('perkara_pihak2');
+        $this->db2->join('perkara', 'perkara.perkara_id=perkara_pihak2.perkara_id');
+		$this->db2->join('pihak', 'perkara_pihak2.pihak_id=pihak.id');
+		$this->db2->where('pihak.nomor_indentitas' , $nik);
+	    $query = $this->db2->get()->result();
+	    $response['status']=200;
+	    $response['noperk']=$query;
+	    return $query;
+	}
 
 	public function logined($token, $id) 
   	{
