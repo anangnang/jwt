@@ -50,6 +50,14 @@ class M_main extends CI_Model{
         }
     }
 
+
+    public function verifikasi_user($id)
+		{
+			//echo $kode_standar;
+			$query = $this->db->query("update m_user set status=1 where id='".$id."';");
+		}
+
+
 	public function register($uuid,$nik,$noHP,$encrypted_password, $password) {
 		$this->db->set('nik',  $nik);
 		$this->db->set('noHP',  $noHP);
@@ -64,6 +72,7 @@ class M_main extends CI_Model{
 		$this->db->set('nik',  $nik);
 		$this->db->set('noHP',  $noHP);
 		$this->db->set('password', $password);
+		$this->db->set('status', 0);
 		$this->db->insert('m_user');
 		return $this->db->insert_id();
 	}
@@ -83,7 +92,7 @@ class M_main extends CI_Model{
 	    $response['noperk']=$query;
 	    return $query;
 	}
-	
+
 	public function cek_noperk2($nik) 
   	{
 	    $this->db2->select('perkara.perkara_id, perkara.nomor_perkara');
@@ -108,14 +117,16 @@ WHERE pihak.`nomor_indentitas`=$nik");
 	    $response['status']=200;
 	    $response['noperk']=$query;
 	    return $query1;
+	}
+
 
 	public function logined($token, $id) 
   	{
-	    $this->db->select('id,user_id,token');
+	    $this->db->select('id,user_id,token,status');
 		$this->db->from('m_user_authentication');
 		$this->db->where('token' , $token);
 		$this->db->where('user_id' , $id);
-	    $query = $this->db->get()->result();
+	    $query = $this->db->get()->row();
 	    return $query;
 	}
 
@@ -250,16 +261,35 @@ WHERE pihak.`nomor_indentitas`=$nik");
 
     public function get_jadwal_sidang($nik)
 	{
-	    $this->db2->select('perkara_jadwal_sidang.id, perkara_jadwal_sidang.perkara_id, perkara_jadwal_sidang.verzet, perkara_jadwal_sidang.keberatan, perkara_jadwal_sidang.ikrar_talak, perkara_jadwal_sidang.urutan, perkara_jadwal_sidang.tanggal_sidang, perkara_jadwal_sidang.jam_sidang, perkara_jadwal_sidang.sampai_jam, perkara_jadwal_sidang.agenda_id, perkara_jadwal_sidang.agenda, perkara_jadwal_sidang.ruangan_id, perkara_jadwal_sidang.ruangan, perkara_jadwal_sidang.sidang_keliling, perkara_jadwal_sidang.dihadiri_oleh, perkara_jadwal_sidang.ditunda, perkara_jadwal_sidang.alasan_ditunda, perkara_jadwal_sidang.sidang_ditempat, perkara_jadwal_sidang.sifat_sidang, perkara_jadwal_sidang.keterangan');
-		$this->db2->from('perkara_pihak2');
-		$this->db2->join('pihak', 'perkara_pihak2.pihak_id=pihak.id');
-        $this->db2->join('perkara_jadwal_sidang', 'perkara_jadwal_sidang.perkara_id=perkara_pihak2.perkara_id', 'left');
-		$this->db2->where('pihak.nomor_indentitas' , $nik);
-	    $query = $this->db2->get()->result();
+
+		$query = $this->db2->query("select perkara_jadwal_sidang.id, perkara_jadwal_sidang.perkara_id, perkara_jadwal_sidang.verzet, perkara_jadwal_sidang.keberatan, perkara_jadwal_sidang.ikrar_talak, perkara_jadwal_sidang.urutan, perkara_jadwal_sidang.tanggal_sidang, perkara_jadwal_sidang.jam_sidang, perkara_jadwal_sidang.sampai_jam, perkara_jadwal_sidang.agenda_id, perkara_jadwal_sidang.agenda, perkara_jadwal_sidang.ruangan_id, perkara_jadwal_sidang.ruangan, perkara_jadwal_sidang.sidang_keliling, perkara_jadwal_sidang.dihadiri_oleh, perkara_jadwal_sidang.ditunda, perkara_jadwal_sidang.alasan_ditunda, perkara_jadwal_sidang.sidang_ditempat, perkara_jadwal_sidang.sifat_sidang, perkara_jadwal_sidang.keterangan
+		 FROM pihak
+LEFT JOIN perkara_pihak2 ON pihak.`id`=perkara_pihak2.`pihak_id`
+LEFT JOIN perkara_pihak1 ON pihak.`id`=perkara_pihak1.`pihak_id`
+JOIN perkara_jadwal_sidang ON perkara_jadwal_sidang.`perkara_id`=(IF(perkara_pihak2.`perkara_id` IS NULL, perkara_pihak1.`perkara_id`, perkara_pihak2.`perkara_id`))
+WHERE pihak.`nomor_indentitas`=$nik");
+
+		$query1=$query->result();
+	    
 	    $response['error']=false;
 	    $response['status']=200;
 	    $response['response']='jadwal sidang ditemukan';
-	    $response['sidang_detil']=$query;
+	    $response['sidang_detil']=$query1;
+	    return $response;
+	}
+
+
+	public function get_jadwal_sidang_per_perkara($perkara_id)
+	{
+
+		$query = $this->db2->query("select *, DATEDIFF(tanggal_sidang,NOW()) AS hmin from perkara_jadwal_sidang where perkara_id=$perkara_id");
+
+		$query1=$query->result();
+	    
+	    $response['error']=false;
+	    $response['status']=200;
+	    $response['response']='jadwal sidang ditemukan';
+	    $response['sidang_detil']=$query1;
 	    return $response;
 	}
 
