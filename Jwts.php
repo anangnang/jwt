@@ -118,8 +118,12 @@ class Jwts extends REST_Controller {
         }
         }
         else{
-            exit('Wrong Token');
+            $output['error'] = true;
+            $output['status'] = 200;
+            $output['response'] = 'Unauthorized';
+            $this->set_response($output, REST_Controller::HTTP_OK);
         }
+      
       
     }
 
